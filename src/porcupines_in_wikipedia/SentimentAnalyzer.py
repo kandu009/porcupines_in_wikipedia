@@ -9,6 +9,7 @@ from_id = 'from'
 message_id = 'msg'
 time_id = 'time'
 compound_id = 'compound'
+delimiter = '|'
 
 # method to return the sentiment associated with the comment.
 # polarity_scores returns a json of format 
@@ -21,7 +22,7 @@ def get_sentiment_scale(analyzer_obj, comment):
 
 # method to write the data to the output file for using it on BigQuery
 def write_to_file(file_desc, data):
-	file_desc.write(data+'\n')
+	file_desc.write(data.encode('utf-8')+'\n')
 
 if __name__ == '__main__':
 	
@@ -46,8 +47,8 @@ if __name__ == '__main__':
 
 		# Get the data needed to generate the output file
 		for obj in conversations_arr[conversation_id]:
-			sentiment_scale = get_sentiment_scale(analyzer_obj, obj[message_id])
-			output_data = obj[from_id] + ',' + obj[to_id] + "," + obj[time_id] + "," + str(sentiment_scale)
+			sentiment_scale = get_sentiment_scale(analyzer_obj, obj[message_id].encode('utf-8'))
+			output_data = obj[from_id] + delimiter + obj[to_id] + delimiter + obj[time_id] + delimiter + str(sentiment_scale)
 			write_to_file(output_fd, output_data)
 
 		output_fd.close()
